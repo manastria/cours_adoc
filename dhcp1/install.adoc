@@ -9,12 +9,12 @@ Le DHCP (_Dynamtic Host Control Protocol_) permet d’attribuer automatiquement 
 Premièrement, installez le paquet `isc-dhcp-server`.
 
 ----
-aptitude install isc-dhcp-server
+# aptitude install isc-dhcp-server
 ----
 
 Editez le fichier de configuration suivante : /etc/dhcp/dhcpd.conf
 ----
-nano /etc/dhcp/dhcpd.conf
+# nano /etc/dhcp/dhcpd.conf
 ----
 
 Ajouter ici les lignes correspondantes à la configuration que vous souhaitez, par exemple :
@@ -55,15 +55,15 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 Une fois ceci fait, vérifier la configuration de votre fichier avec :
 
 ----
-dhcpd -t /etc/dhcp/dhcpd.conf
+# dhcpd -t /etc/dhcp/dhcpd.conf
 ----
 
 Indiquer l’interface sur laquelle les adresses IP seront attribuées.
 ----
-nano /etc/default/isc-dhcp-server
+# nano /etc/default/isc-dhcp-server
 ----
 
-À la ligne : INTERFACES= » », indquer la ou les interfaces (séparées par une virgule) à écouter.
+À la ligne : `INTERFACES= ""`, indquer la ou les interfaces (séparées par une virgule) à écouter.
 
 Chez moi ce sera :
 ----
@@ -75,12 +75,11 @@ Redémarrer ensuite le serveur dhcp
 /etc/init.d/isc-dhcp-server restart
 ----
 
-Si le serveur DHCP affiche une erreur
-
-Il faudra le relancer après le lancement de networking.
+Si le serveur DHCP affiche une erreur, il faudra le relancer après le lancement de networking.
 ----
 nano /etc/network/interfaces
 ----
+
 Puis entrez les lignes suivantes :
 ----
 iface eth0 inet static
@@ -94,12 +93,12 @@ auto eth0
 
 Redémarrer ensuite la station.
 ----
-reboot
+# reboot
 ----
 
 Votre serveur DHCP devrait être fonctionnel !
 
 Pour tester si le dhcp fonctionne, utiliser la commande dhclient.
 ----
-dhclient eth0
+# dhclient eth0
 ----
