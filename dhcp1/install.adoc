@@ -1,0 +1,99 @@
+= Isc-Dhcp-Server : Configurer un serveur DHCP
+
+Le DHCP (_Dynamtic Host Control Protocol_) permet d’attribuer automatiquement les adresses IP des ordinateurs clients. Ainsi l’attribution n’est plus manuelle et se fait de manière transparente pour l’utilisateur, on utilise le serveur DHCP dans un réseau local et notamment pour se connecter au routeur (votre box internet).
+
+Premièrement, installez le paquet `isc-dhcp-server`.
+
+----
+aptitude install isc-dhcp-server
+----
+
+Editez le fichier de configuration suivante : /etc/dhcp/dhcpd.conf
+----
+nano /etc/dhcp/dhcpd.conf
+----
+
+Ajouter ici les lignes correspondantes à la configuration que vous souhaitez, par exemple :
+----
+### Changer ces lignes
+
+# Nom de domaine pour le réseau local
+option domain-name "security-helpzone.lan"; 
+
+# Utilisation des DNS, si vous avez bind d'installé vous pouvez spécifier les IPs (comme moi), sinon utilisez les DNS de Google
+option domain-name-servers 192.168.1.2, 192.168.1.3;
+
+# Temps durant lequel les adresses ip locales seront assignées
+default-lease-time 86400;
+max-lease-time 604800;
+
+### Il faut décommenter cette ligne
+authoritative;
+
+### Ajout de l'attribution
+subnet 192.168.1.0 netmask 255.255.255.0 {
+	# rang d'attribution (100 machines)
+	range 192.168.1.100 192.168.1.200;
+
+	# masque de sous-réseau
+	option subnet-mask 255.255.255.0;
+
+	# broadcast pour les informations générales
+	option broadcast-address 192.168.1.255;
+
+	# adresse ip du routeur
+	option routers 192.168.1.254;
+}
+----
+
+Une fois ceci fait, vérifier la configuration de votre fichier avec :
+
+----
+dhcpd -t /etc/dhcp/dhcpd.conf
+----
+
+Indiquer l’interface sur laquelle les adresses IP seront attribuées.
+----
+nano /etc/default/isc-dhcp-server
+----
+
+À la ligne : INTERFACES= » », indquer la ou les interfaces (séparées par une virgule) à écouter.
+
+Chez moi ce sera :
+----
+INTERFACES="eth0"
+----
+
+Redémarrer ensuite le serveur dhcp
+----
+/etc/init.d/isc-dhcp-server restart
+----
+
+Si le serveur DHCP affiche une erreur
+
+Il faudra le relancer après le lancement de networking.
+----
+nano /etc/network/interfaces
+----
+Puis entrez les lignes suivantes :
+----
+iface eth0 inet static
+adress 192.168.1.101
+network 192.168.1.0/24
+netmask 255.255.255
+broadcast 192.168.1.255
+up service isc-dhcp-server restart
+auto eth0
+----
+
+Redémarrer ensuite la station.
+----
+reboot
+----
+
+Votre serveur DHCP devrait être fonctionnel !
+
+Pour tester si le dhcp fonctionne, utiliser la commande dhclient.
+----
+dhclient eth0
+----
