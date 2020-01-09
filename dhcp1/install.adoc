@@ -1,4 +1,8 @@
 = Isc-Dhcp-Server : Configurer un serveur DHCP
+:source-highlighter: highlightjs
+
+
+
 
 Le DHCP (_Dynamtic Host Control Protocol_) permet d’attribuer automatiquement les adresses IP des ordinateurs clients. Ainsi l’attribution n’est plus manuelle et se fait de manière transparente pour l’utilisateur, on utilise le serveur DHCP dans un réseau local et notamment pour se connecter au routeur (votre box internet).
 
@@ -14,6 +18,8 @@ nano /etc/dhcp/dhcpd.conf
 ----
 
 Ajouter ici les lignes correspondantes à la configuration que vous souhaitez, par exemple :
+
+[source,nginx]
 ----
 ### Changer ces lignes
 
