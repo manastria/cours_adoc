@@ -1,5 +1,6 @@
 = Isc-Dhcp-Server : Configurer un serveur DHCP
 :source-highlighter: highlightjs
+:numbered:
 :sectnums:
 :toc:
 :experimental:
