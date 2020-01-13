@@ -59,7 +59,7 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 Une fois ceci fait, vérifier la configuration de votre fichier avec :
 
 ----
-# dhcpd -t /etc/dhcp/dhcpd.conf
+# /sbin/dhcpd -t
 ----
 
 Indiquer l’interface sur laquelle les adresses IP seront attribuées.
