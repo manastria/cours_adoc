@@ -1,6 +1,5 @@
 = Isc-Dhcp-Server : Configurer un serveur DHCP
 :source-highlighter: highlightjs
-:numbered:
 :sectnums:
 :toc:
 :experimental:
@@ -17,7 +16,7 @@ Premièrement, installez le paquet `isc-dhcp-server`.
 # aptitude install isc-dhcp-server
 ----
 
-Editez le fichier de configuration suivante : /etc/dhcp/dhcpd.conf
+Editez le fichier de configuration suivante : `/etc/dhcp/dhcpd.conf`
 ----
 # nano /etc/dhcp/dhcpd.conf
 ----
@@ -34,7 +33,7 @@ option domain-name "security-helpzone.lan";
 # Utilisation des DNS, si vous avez bind d'installé vous pouvez spécifier les IPs (comme moi), sinon utilisez les DNS de Google
 option domain-name-servers 192.168.1.2, 192.168.1.3;
 
-# Temps durant lequel les adresses ip locales seront assignées
+# Temps durant lequel les adresses ip locales seront assignées (en secondes)
 default-lease-time 86400;
 max-lease-time 604800;
 
@@ -82,7 +81,7 @@ Redémarrer ensuite le serveur dhcp
 
 Votre serveur DHCP devrait être fonctionnel !
 
-Pour tester si le dhcp fonctionne, utiliser la commande dhclient.
+Pour tester si le dhcp fonctionne, utiliser la commande `dhclient`.
 ----
 # dhclient eth0
 ----
@@ -121,7 +120,7 @@ Les événements sont enregistrés par défaut dans `/var/log/syslog`. Pour qu'i
 log-facility local7;
 ----
 
-  * Créer le fichier /var/log/dhcpd.log avec comme propriétaire `syslog` (droits rw) et comme groupe `adm` (droits r).
+  * Créer le fichier /var/log/dhcpd.log avec comme propriétaire `syslog` (droits `rw`) et comme groupe `adm` (droits `r`).
 ----
 touch /var/log/dhcpd.log
 chown syslog:adm /var/log/dhcpd.log
