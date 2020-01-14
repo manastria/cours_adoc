@@ -117,11 +117,9 @@ Les événements sont enregistrés par défaut dans `/var/log/syslog`. Pour qu'i
 log-facility local7;
 ----
 
-  * Créer le fichier /var/log/dhcpd.log avec comme propriétaire `syslog` (droits `rw`) et comme groupe `adm` (droits `r`).
+  * Créer le fichier `/var/log/dhcpd.log`.
 ----
-touch /var/log/dhcpd.log
-chown syslog:adm /var/log/dhcpd.log
-chmod 0640 /var/log/dhcpd.log
+# touch /var/log/dhcpd.log
 ----
 
   * Puis ajouter ceci dans le fichier /etc/rsyslog.d/50-default.conf :
@@ -129,13 +127,13 @@ chmod 0640 /var/log/dhcpd.log
 local7.*          /var/log/dhcpd.log
 ----
 
-  * Pour ne plus logguer dans syslog, dans /etc/rsyslog.d/50-default.conf modifier :
+  * Pour ne plus logguer dans syslog, dans `/etc/rsyslog.conf` modifier :
 ----
-*.*;auth,authpriv.none              -/var/log/syslog
+daemon.*            -/var/log/daemon.log
 ----
 en
 ----
-*.*;auth,authpriv.none;local7.none              -/var/log/syslog
+daemon.*;local7.none            -/var/log/daemon.log
 ----
 
   * et relancer les daemons syslog et isc-dhcp-server
@@ -184,4 +182,107 @@ Il faut également éditer le fichier `/etc/dhcp/dhcpd.conf` dans le serveur DHC
 ----
 #Remplacez 192.168.2.0 par le réseau où se trouve le relais DHCP
 subnet 192.168.2.0 netmask 255.255.255.0 {}
+----
+
+
+## Générer une demande DHCP
+
+----
+# nmap --script broadcast-dhcp-discover
+Starting Nmap 7.70 ( https://nmap.org ) at 2020-01-14 17:43 CET
+Pre-scan script results:
+| broadcast-dhcp-discover:
+|   Response 1 of 1:
+|     IP Offered: 192.168.186.130
+|     DHCP Message Type: DHCPOFFER
+|     Server Identifier: 192.168.186.129
+|     IP Address Lease Time: 5m00s
+|     Subnet Mask: 255.255.255.0
+|     Router: 192.168.186.254
+|     Domain Name Server: 192.168.1.2, 192.168.1.3
+|_    Domain Name: security-helpzone.lan
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 1.54 seconds
+----
+
+## Snippet
+
+----
+##### Option générale par défaut #####
+
+### RÉSEAU #####
+
+## Nom du serveur DHCP
+server-name "dhcp.manastria.fr";
+
+## Mode autoritaire (autoritaire)
+authoritative;
+
+### DOMAINE ###
+
+## Nom du domaine
+option domain-name "manastria.fr";
+
+## Adresse IP du serveur DNS
+# A remplacer par l'IP du serveur DNS
+option domain-name-servers XXX.XXX.XXX.XXX;
+
+### TEMPS DE RENOUVÈLEMENT DES ADRESSES (en secondes) ###
+default-lease-time 3600;
+max-lease-time 7200;
+
+### Sécurité ###
+
+## refus(deny)/autorise(allow) les clients inconnus (refuse client inconnu)
+allow unknown-clients;
+
+## Use this to send dhcp log messages to a different log file (you also
+## have to hack syslog.conf to complete the redirection).
+log-facility local7;
+
+##### RÉSEAUX #####
+## déclaration sous réseau 192.168.1.*
+subnet 192.168.1.0 netmask 255.255.255.0 {
+  # Si vous voulez spécifier un domaine différent de celui par défaut :
+  option domain-name "ubuntu-fr.lan";
+
+  ## Serveurs DNS 
+  option domain-name-servers 8.8.8.8, 1.1.1.1;
+
+  ## routeur par défaut
+  option routers 192.168.1.1;
+        ## Plage d'attribution d'adresse
+        # Ici débute à 1.10, 1.1 à 1.9 étant déjà prises.
+  range 192.168.1.10 192.168.1.100;
+  range 192.168.1.150 192.168.1.200;
+  # évalue si l'adresse est déjà attribuée
+  ping-check = 1;
+}
+
+
+#### Configuration des hôtes avec IP fixée ####
+# hôte « FTP »
+host ftp {
+  hardware ethernet 00:0f:75:af:eb:44;
+  fixed-address 192.168.1.2;
+} 
+# hôte « WEB »
+host web {
+  hardware ethernet 00:02:0d:31:d1:cc;
+  fixed-address 192.168.1.3;
+}
+
+
+# Groupe séparé avec certains paramètres équivalents :
+group {
+  # Tout le groupe disposera d'un autre serveur DNS (dans ce cas "desktop" et "tv")
+  options domain-name-servers 8.8.4.4;
+  host desktop {
+    hardware ethernet ab:cd:ef:11:22:33;
+  }
+  
+  host tv {
+    hardware ethernet 33:22:11:ef:cd:ab;
+  }
+}
 ----
