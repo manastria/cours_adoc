@@ -48,9 +48,6 @@ subnet 192.168.1.0 netmask 255.255.255.0 {
 	# masque de sous-réseau
 	option subnet-mask 255.255.255.0;
 
-	# broadcast pour les informations générales
-	option broadcast-address 192.168.1.255;
-
 	# adresse ip du routeur
 	option routers 192.168.1.254;
 }
